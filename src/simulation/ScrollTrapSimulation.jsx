@@ -1872,7 +1872,7 @@ function buildPathSummaryStrings(path, interestLabel) {
   };
 }
 
-export default function App() {
+export default function ScrollTrapSimulation() {
   const [selectedInterest, setSelectedInterest] = useState(null);
   const [wallet, setWallet] = useState(INITIAL_WALLET);
   const [adIntensity, setAdIntensity] = useState(0);
@@ -1890,6 +1890,7 @@ export default function App() {
   const [firstProductInteractionIndex, setFirstProductInteractionIndex] =
     useState(null);
   const [firstBuySlotIndex, setFirstBuySlotIndex] = useState(null);
+  const [productPageOpen, setProductPageOpen] = useState(false);
 
   useEffect(() => {
     if (finished) {
@@ -1920,6 +1921,18 @@ export default function App() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [finished, summarySlideIndex]);
+
+  useEffect(() => {
+    if (!productPageOpen) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setProductPageOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [productPageOpen]);
 
   const tryFinishOrAdvanceCard = useCallback(
     (nextInteraction, nextIntensity, nextAffinity) => {
@@ -1955,6 +1968,7 @@ export default function App() {
     setFinished(false);
     setFirstProductInteractionIndex(null);
     setFirstBuySlotIndex(null);
+    setProductPageOpen(false);
     setCurrentCard(pickWeightedCard(0, {}, null, 0, id));
   }, []);
 
@@ -2030,6 +2044,8 @@ export default function App() {
     if (currentCard.phase !== 4) return;
     if (currentCard.price <= 0 || currentCard.price > wallet) return;
 
+    setProductPageOpen(false);
+
     if (currentCard.phase >= 2) {
       setFirstProductInteractionIndex((prev) =>
         prev === null ? interactionCount : prev
@@ -2070,6 +2086,7 @@ export default function App() {
     setCurrentCard(null);
     setFirstProductInteractionIndex(null);
     setFirstBuySlotIndex(null);
+    setProductPageOpen(false);
     setSummarySlideIndex(0);
     setReflectionInput("");
   }, []);
@@ -2382,93 +2399,158 @@ export default function App() {
           For you · {interestLabel}
         </p>
 
-        <div className="feed-area">
-          <article
-            key={currentCard.id}
-            className="video-card card-enter"
-            aria-label="Current video in feed"
+        {productPageOpen && showCommerceChrome ? (
+          <div
+            className="product-page"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Product details"
           >
-            <img
-              className="video-thumb"
-              src={thumbnailUrlForCard(currentCard)}
-              alt=""
-              width={400}
-              height={700}
-            />
-            <div className="video-shade" aria-hidden />
-            <div className="video-caption-block">
-              <div className="video-caption">
-                <h2 className="video-title">{currentCard.title}</h2>
-                {showCommerceChrome && currentCard.price > 0 && (
-                  <p className="video-price video-price--soft">${currentCard.price}</p>
+            <div className="product-page__top">
+              <button
+                type="button"
+                className="product-page__back"
+                onClick={() => setProductPageOpen(false)}
+                aria-label="Back to feed"
+              >
+                <span className="product-page__back-icon" aria-hidden>
+                  ←
+                </span>
+                <span>feed</span>
+              </button>
+            </div>
+            <div className="product-page__scroll">
+              <div className="product-page__hero">
+                <img
+                  className="product-page__img"
+                  src={thumbnailUrlForCard(currentCard)}
+                  alt=""
+                  width={400}
+                  height={420}
+                />
+              </div>
+              <div className="product-page__body">
+                <p className="product-page__eyebrow">
+                  {INTEREST_META[selectedInterest]?.label ?? "For you"}
+                </p>
+                <h2 className="product-page__title">{currentCard.title}</h2>
+                {currentCard.price > 0 && (
+                  <p className="product-page__price">${currentCard.price}</p>
+                )}
+                <p className="product-page__meta">
+                  <span className="product-page__tag">{currentCard.category}</span>
+                  {currentCard.tactic && currentCard.tactic !== "none" ? (
+                    <span className="product-page__tag product-page__tag--muted">
+                      {currentCard.tactic}
+                    </span>
+                  ) : null}
+                </p>
+                <p className="product-page__hint">
+                  Same moment as the clip — you can go back and keep scrolling, or
+                  choose here.
+                </p>
+              </div>
+            </div>
+            <div className="product-page__footer">
+              <button
+                type="button"
+                className="product-page__buy"
+                onClick={handleBuy}
+                disabled={!canBuy}
+                aria-label={
+                  canBuy ? "Buy and continue feed" : "Not enough balance to buy"
+                }
+              >
+                {canBuy
+                  ? `Choose · $${currentCard.price}`
+                  : `Need $${currentCard.price} · wallet $${wallet}`}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="feed-area">
+            <article
+              key={currentCard.id}
+              className="video-card card-enter"
+              aria-label="Current video in feed"
+            >
+              <img
+                className="video-thumb"
+                src={thumbnailUrlForCard(currentCard)}
+                alt=""
+                width={400}
+                height={700}
+              />
+              <div className="video-shade" aria-hidden />
+              <div className="video-caption-block">
+                <div className="video-caption">
+                  <h2 className="video-title">{currentCard.title}</h2>
+                  {showCommerceChrome && currentCard.price > 0 && (
+                    <p className="video-price video-price--soft">${currentCard.price}</p>
+                  )}
+                </div>
+                <div className="comment-snips" aria-label="Sample comments">
+                  {(currentCard.comments ?? []).map((c, i) => (
+                    <p key={i} className="comment-snip">
+                      <span className="comment-user">@{c.user}</span> {c.text}
+                    </p>
+                  ))}
+                </div>
+              </div>
+              <div className={railClass}>
+                <button
+                  type="button"
+                  className="action-pill"
+                  onClick={handleLike}
+                  aria-label="Like"
+                >
+                  <span className="action-icon" aria-hidden>
+                    ♥
+                  </span>
+                  <span className="action-label">Like</span>
+                </button>
+                <button
+                  type="button"
+                  className="action-pill"
+                  onClick={handleSkip}
+                  aria-label="Skip"
+                >
+                  <span className="action-icon" aria-hidden>
+                    ↓
+                  </span>
+                  <span className="action-label">Skip</span>
+                </button>
+                {showSave && (
+                  <button
+                    type="button"
+                    className="action-pill action-pill--save"
+                    onClick={handleSave}
+                    aria-label="Save"
+                  >
+                    <span className="action-icon" aria-hidden>
+                      ★
+                    </span>
+                    <span className="action-label">Save</span>
+                  </button>
+                )}
+                {showCommerceChrome && (
+                  <button
+                    type="button"
+                    className="action-pill action-pill--product"
+                    onClick={() => setProductPageOpen(true)}
+                    aria-label="View product page"
+                    title="View product page"
+                  >
+                    <span className="action-icon" aria-hidden>
+                      ↗
+                    </span>
+                    <span className="action-label">View product</span>
+                  </button>
                 )}
               </div>
-              <div className="comment-snips" aria-label="Sample comments">
-                {(currentCard.comments ?? []).map((c, i) => (
-                  <p key={i} className="comment-snip">
-                    <span className="comment-user">@{c.user}</span> {c.text}
-                  </p>
-                ))}
-              </div>
-            </div>
-            <div className={railClass}>
-              <button
-                type="button"
-                className="action-pill"
-                onClick={handleLike}
-                aria-label="Like"
-              >
-                <span className="action-icon" aria-hidden>
-                  ♥
-                </span>
-                <span className="action-label">Like</span>
-              </button>
-              <button
-                type="button"
-                className="action-pill"
-                onClick={handleSkip}
-                aria-label="Skip"
-              >
-                <span className="action-icon" aria-hidden>
-                  ↓
-                </span>
-                <span className="action-label">Skip</span>
-              </button>
-              {showSave && (
-                <button
-                  type="button"
-                  className="action-pill action-pill--save"
-                  onClick={handleSave}
-                  aria-label="Save"
-                >
-                  <span className="action-icon" aria-hidden>
-                    ★
-                  </span>
-                  <span className="action-label">Save</span>
-                </button>
-              )}
-              {showCommerceChrome && (
-                <button
-                  type="button"
-                  className="action-pill action-pill--product"
-                  onClick={handleBuy}
-                  disabled={!canBuy}
-                  aria-label="View product"
-                  title={
-                    !canBuy
-                      ? "Wallet balance too low"
-                      : "View product"
-                  }
-                >
-                  <span className="action-icon" aria-hidden>
-                    ↗
-                  </span>
-                  <span className="action-label">View product</span>
-                </button>
-              )}
-            </div>
-          </article>
-        </div>
+            </article>
+          </div>
+        )}
       </div>
     </div>
   );
