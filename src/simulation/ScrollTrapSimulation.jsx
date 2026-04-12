@@ -21,9 +21,11 @@ function card(
   promotional,
   price,
   tactic,
-  comments
+  comments,
+  extras = {}
 ) {
-  return {
+  const { listPrice, promoTag } = extras;
+  const cardData = {
     id,
     title,
     category,
@@ -33,6 +35,33 @@ function card(
     price,
     tactic,
     comments,
+  };
+  if (typeof listPrice === "number" && listPrice > price) {
+    cardData.listPrice = listPrice;
+  }
+  if (promoTag && typeof promoTag === "string") {
+    cardData.promoTag = promoTag;
+  }
+  return cardData;
+}
+
+/** Display-only pricing for product sheet; checkout still uses `price`. */
+function getProductPricing(card) {
+  const price = card.price ?? 0;
+  const listPrice = card.listPrice;
+  const hasCompare =
+    typeof listPrice === "number" && listPrice > price && price > 0;
+  const saveAmount = hasCompare ? listPrice - price : 0;
+  const savePct = hasCompare
+    ? Math.max(1, Math.round((saveAmount / listPrice) * 100))
+    : 0;
+  return {
+    price,
+    listPrice: hasCompare ? listPrice : null,
+    saveAmount,
+    savePct,
+    hasCompare,
+    promoTag: card.promoTag,
   };
 }
 
@@ -351,7 +380,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "han", text: "still on it?" },
           { user: "p", text: "yeah, weirdly" },
-        ]
+        ],
+        { listPrice: 12, promoTag: "Intro rate" }
       ),
       card(
         "stu-p4b",
@@ -365,7 +395,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "mina", text: "comfortable for hours?" },
           { user: "leo", text: "for me yes" },
-        ]
+        ],
+        { listPrice: 99, promoTag: "Fan favorite" }
       ),
       card(
         "stu-p4c",
@@ -379,7 +410,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "nour", text: "which size" },
           { user: "gray", text: "medium desk gang" },
-        ]
+        ],
+        { listPrice: 29, promoTag: "Desk upgrade" }
       ),
       card(
         "stu-p4d",
@@ -393,7 +425,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "tess", text: "gentle structure" },
           { user: "vic", text: "saved mine" },
-        ]
+        ],
+        { listPrice: 15, promoTag: "Student pick" }
       ),
       card(
         "stu-p4e",
@@ -407,7 +440,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "ida", text: "warm or cool?" },
           { user: "rob", text: "warm for me" },
-        ]
+        ],
+        { listPrice: 24, promoTag: "Setup bundle" }
       ),
       card(
         "stu-p4f",
@@ -421,7 +455,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "eli", text: "realistic" },
           { user: "sam", text: "same one two years" },
-        ]
+        ],
+        { listPrice: 38, promoTag: "Reference" }
       ),
       card(
         "stu-p4g",
@@ -435,7 +470,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "j", text: "stable enough?" },
           { user: "ria", text: "tighten once, fine" },
-        ]
+        ],
+        { listPrice: 119, promoTag: "Ergonomics" }
       ),
     ],
   },
@@ -753,7 +789,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "mina", text: "true to size?" },
           { user: "leo", text: "half up for me" },
-        ]
+        ],
+        { listPrice: 85, promoTag: "Restock deal" }
       ),
       card(
         "fas-p4b",
@@ -767,7 +804,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "nour", text: "heavy or light?" },
           { user: "gray", text: "mid weight" },
-        ]
+        ],
+        { listPrice: 139, promoTag: "Seasonal" }
       ),
       card(
         "fas-p4c",
@@ -781,7 +819,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "tess", text: "sensitive skin ok?" },
           { user: "vic", text: "fine for me" },
-        ]
+        ],
+        { listPrice: 52, promoTag: "Set value" }
       ),
       card(
         "fas-p4d",
@@ -795,7 +834,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "ida", text: "fits big phone?" },
           { user: "rob", text: "pro max yes" },
-        ]
+        ],
+        { listPrice: 24, promoTag: "Everyday" }
       ),
       card(
         "fas-p4e",
@@ -809,7 +849,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "han", text: "wide calf?" },
           { user: "p", text: "roomy on me" },
-        ]
+        ],
+        { listPrice: 109, promoTag: "Walk-ready" }
       ),
       card(
         "fas-p4f",
@@ -823,7 +864,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "eli", text: "strap width?" },
           { user: "sam", text: "wide enough" },
-        ]
+        ],
+        { listPrice: 45, promoTag: "Carry comfort" }
       ),
       card(
         "fas-p4g",
@@ -837,7 +879,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "j", text: "shrink?" },
           { user: "ria", text: "cold wash" },
-        ]
+        ],
+        { listPrice: 58, promoTag: "3-pack" }
       ),
     ],
   },
@@ -1155,7 +1198,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "mina", text: "fragrance?" },
           { user: "leo", text: "barely there" },
-        ]
+        ],
+        { listPrice: 36, promoTag: "Repurchase" }
       ),
       card(
         "ski-p4b",
@@ -1169,7 +1213,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "nour", text: "how often" },
           { user: "gray", text: "when I remember" },
-        ]
+        ],
+        { listPrice: 65, promoTag: "Ritual kit" }
       ),
       card(
         "ski-p4c",
@@ -1183,7 +1228,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "tess", text: "white cast?" },
           { user: "vic", text: "light on me" },
-        ]
+        ],
+        { listPrice: 44, promoTag: "Duo deal" }
       ),
       card(
         "ski-p4d",
@@ -1197,7 +1243,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "ida", text: "eyes?" },
           { user: "rob", text: "keep closed" },
-        ]
+        ],
+        { listPrice: 28, promoTag: "Double cleanse" }
       ),
       card(
         "ski-p4e",
@@ -1211,7 +1258,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "han", text: "texture?" },
           { user: "p", text: "a little tacky" },
-        ]
+        ],
+        { listPrice: 19, promoTag: "PM care" }
       ),
       card(
         "ski-p4f",
@@ -1225,7 +1273,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "eli", text: "technique tips?" },
           { user: "sam", text: "light pressure" },
-        ]
+        ],
+        { listPrice: 22, promoTag: "Tool" }
       ),
       card(
         "ski-p4g",
@@ -1239,7 +1288,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "j", text: "oxidize fast?" },
           { user: "ria", text: "cap tight" },
-        ]
+        ],
+        { listPrice: 26, promoTag: "Brightening" }
       ),
     ],
   },
@@ -1557,7 +1607,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "mina", text: "charge often?" },
           { user: "leo", text: "morning to lunch" },
-        ]
+        ],
+        { listPrice: 44, promoTag: "Morning ritual" }
       ),
       card(
         "life-p4b",
@@ -1571,7 +1622,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "nour", text: "pet safe?" },
           { user: "gray", text: "check list" },
-        ]
+        ],
+        { listPrice: 35, promoTag: "First box" }
       ),
       card(
         "life-p4c",
@@ -1585,7 +1637,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "tess", text: "noise ok?" },
           { user: "vic", text: "kitchen fine" },
-        ]
+        ],
+        { listPrice: 115, promoTag: "Kitchen staple" }
       ),
       card(
         "life-p4d",
@@ -1599,7 +1652,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "ida", text: "throw or jar" },
           { user: "rob", text: "jar" },
-        ]
+        ],
+        { listPrice: 32, promoTag: "Pair deal" }
       ),
       card(
         "life-p4e",
@@ -1613,7 +1667,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "han", text: "flexible?" },
           { user: "p", text: "skip weeks" },
-        ]
+        ],
+        { listPrice: 49, promoTag: "Weekly box" }
       ),
       card(
         "life-p4f",
@@ -1627,7 +1682,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "eli", text: "gets stuck?" },
           { user: "sam", text: "rarely" },
-        ]
+        ],
+        { listPrice: 169, promoTag: "Refurb" }
       ),
       card(
         "life-p4g",
@@ -1641,7 +1697,8 @@ const FEEDS_BY_INTEREST = {
         [
           { user: "j", text: "grip ok?" },
           { user: "ria", text: "fine barefoot" },
-        ]
+        ],
+        { listPrice: 42, promoTag: "Stretch" }
       ),
     ],
   },
@@ -2529,6 +2586,7 @@ export default function ScrollTrapSimulation() {
   }
 
   const productMoment = productPageMoment(currentCard);
+  const pricing = getProductPricing(currentCard);
 
   return (
     <div className="app-shell">
@@ -2579,6 +2637,20 @@ export default function ScrollTrapSimulation() {
             </div>
             <div className="product-page__scroll">
               <div className="product-page__hero">
+                {(pricing.promoTag || pricing.hasCompare) && (
+                  <div className="product-page__hero-badges" aria-hidden>
+                    {pricing.promoTag && (
+                      <span className="product-page__badge product-page__badge--tag">
+                        {pricing.promoTag}
+                      </span>
+                    )}
+                    {pricing.hasCompare && (
+                      <span className="product-page__badge product-page__badge--pct">
+                        −{pricing.savePct}%
+                      </span>
+                    )}
+                  </div>
+                )}
                 <img
                   className="product-page__img"
                   src={thumbnailUrlForCard(currentCard)}
@@ -2594,11 +2666,31 @@ export default function ScrollTrapSimulation() {
                 <h2 className="product-page__title">{productMoment.headline}</h2>
                 <p className="product-page__feeling">{productMoment.feeling}</p>
                 {currentCard.price > 0 && (
-                  <p className="product-page__price-line">
-                    <span className="product-page__price">
-                      About ${currentCard.price}
-                    </span>
-                  </p>
+                  <div className="product-page__price-block">
+                    <div className="product-page__price-row">
+                      <span className="product-page__price-now">
+                        ${currentCard.price}
+                      </span>
+                      {pricing.hasCompare && (
+                        <span
+                          className="product-page__price-was"
+                          aria-label={`Reference price ${pricing.listPrice} dollars`}
+                        >
+                          ${pricing.listPrice}
+                        </span>
+                      )}
+                    </div>
+                    {pricing.hasCompare ? (
+                      <p className="product-page__save-hint">
+                        Save about ${pricing.saveAmount} vs. reference · about{" "}
+                        {pricing.savePct}% off
+                      </p>
+                    ) : (
+                      <p className="product-page__price-note">
+                        Your routine price · ${currentCard.price}
+                      </p>
+                    )}
+                  </div>
                 )}
                 <ul className="product-page__quotes" aria-label="What people said">
                   {(currentCard.comments ?? []).slice(0, 3).map((c, i) => (

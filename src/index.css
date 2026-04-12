@@ -1026,6 +1026,47 @@ body {
   background: #e2e8f0;
 }
 
+.product-page__hero-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: calc(100% - 20px);
+  pointer-events: none;
+}
+
+.product-page__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: var(--font-body);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+
+.product-page__badge--tag {
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--accent-blue-deep);
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.08);
+}
+
+.product-page__badge--pct {
+  background: linear-gradient(
+    120deg,
+    rgba(251, 113, 133, 0.92),
+    rgba(56, 189, 248, 0.88)
+  );
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.25);
+}
+
 .product-page__img {
   width: 100%;
   height: 100%;
@@ -1063,16 +1104,49 @@ body {
   color: var(--text-muted);
 }
 
-.product-page__price-line {
+.product-page__price-block {
   margin: 0 0 20px;
 }
 
-.product-page__price {
-  font-size: 0.82rem;
+.product-page__price-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 14px;
+}
+
+.product-page__price-now {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  background: linear-gradient(115deg, #fb7185 0%, #38bdf8 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.product-page__price-was {
+  font-size: 0.88rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--text-soft);
-  letter-spacing: 0.02em;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.product-page__save-hint {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.product-page__price-note {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-soft);
 }
 
 .product-page__quotes {
