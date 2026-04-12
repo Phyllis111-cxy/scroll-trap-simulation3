@@ -1647,6 +1647,162 @@ const FEEDS_BY_INTEREST = {
   },
 };
 
+/** Warm, lifestyle-first copy for the product sheet (phase 4). */
+const PRODUCT_PAGE_COPY = {
+  "stu-p4a": {
+    headline: "A softer place to begin",
+    feeling:
+      "Opening it feels like clearing mental clutter—small, steady, and kinder than a fresh tab.",
+  },
+  "stu-p4b": {
+    headline: "Sound that holds your focus",
+    feeling:
+      "The world narrows to one track; your shoulders drop before you’ve named why.",
+  },
+  "stu-p4c": {
+    headline: "Stillness for your mug",
+    feeling:
+      "No more tiny slides across the desk—just a calm landing for your hands between thoughts.",
+  },
+  "stu-p4d": {
+    headline: "Structure without shame",
+    feeling:
+      "Spreadsheets that whisper enough for today instead of demanding a perfect semester.",
+  },
+  "stu-p4e": {
+    headline: "Warmth at the edge of the screen",
+    feeling:
+      "The glow softens midnight tabs; your eyes stop flinching before you notice.",
+  },
+  "stu-p4f": {
+    headline: "Honest weeks on paper",
+    feeling:
+      "Half-filled boxes still tell the truth: you kept showing up in pencil.",
+  },
+  "stu-p4g": {
+    headline: "Stand, stretch, breathe",
+    feeling:
+      "A few inches higher and your spine remembers it’s allowed to let go.",
+  },
+  "fas-p4a": {
+    headline: "Steps that feel like yours",
+    feeling:
+      "Broken-in comfort—same pair, same sidewalk, less second-guessing at the door.",
+  },
+  "fas-p4b": {
+    headline: "Shoulders that finally rest",
+    feeling:
+      "The weight sits right; you stop adjusting every block like something’s wrong.",
+  },
+  "fas-p4c": {
+    headline: "Light that follows you",
+    feeling:
+      "Quiet shine for ordinary daylight—pretty without asking for an audience.",
+  },
+  "fas-p4d": {
+    headline: "Hands free, mind lighter",
+    feeling:
+      "Keys and phone tucked away; walking stops feeling like juggling.",
+  },
+  "fas-p4e": {
+    headline: "Miles without negotiation",
+    feeling:
+      "Ankles stop bargaining with you—pavement becomes something you can stay on.",
+  },
+  "fas-p4f": {
+    headline: "Carry day without the ache",
+    feeling:
+      "Laptop, water, the small chaos—held without the shoulder drama.",
+  },
+  "fas-p4g": {
+    headline: "Soft rotation you trust",
+    feeling:
+      "Nothing viral—just cotton that forgives Monday and Tuesday and the repeat.",
+  },
+  "ski-p4a": {
+    headline: "Skin that stops flinching",
+    feeling:
+      "A serum that meets you gently—reactive days feel a little less loud.",
+  },
+  "ski-p4b": {
+    headline: "Light when the day won’t unclench",
+    feeling:
+      "The timer starts and you exhale—ritual before miracle, honesty before hype.",
+  },
+  "ski-p4c": {
+    headline: "Sun care you actually finish",
+    feeling:
+      "Two tubes, a year of small promises kept—prevention that feels like self-respect.",
+  },
+  "ski-p4d": {
+    headline: "Melting the day away",
+    feeling:
+      "Oil doing quiet work—removal becomes something you don’t rush through.",
+  },
+  "ski-p4e": {
+    headline: "Mornings a little softer",
+    feeling:
+      "Less crusty, more honest—lips that feel tended, not displayed.",
+  },
+  "ski-p4f": {
+    headline: "Two minutes, cooler cheeks",
+    feeling:
+      "Stone on skin, puff eases before you’ve said a word out loud.",
+  },
+  "ski-p4g": {
+    headline: "Patience in a bottle",
+    feeling:
+      "Slow brightening for dull weeks—glow as something you grow, not grab.",
+  },
+  "life-p4a": {
+    headline: "Warmth that waits for you",
+    feeling:
+      "Coffee stays kind through slow mornings—no performance, just a gentler start.",
+  },
+  "life-p4b": {
+    headline: "Green that doesn’t guilt you",
+    feeling:
+      "First month gentle; if life gets loud, you can pause without shame.",
+  },
+  "life-p4c": {
+    headline: "Fewer decisions at dinner",
+    feeling:
+      "Nothing chef-y—just a rhythm that makes the kitchen feel less like a test.",
+  },
+  "life-p4d": {
+    headline: "Scent that holds winter",
+    feeling:
+      "A small flame, a shared question—cozy without a sales pitch.",
+  },
+  "life-p4e": {
+    headline: "Heavy weeks, simpler plates",
+    feeling:
+      "Portions that fit real life—flex when you need air, structure when you don’t.",
+  },
+  "life-p4f": {
+    headline: "Floors that meet you halfway",
+    feeling:
+      "Middle of the room handled; corners stay human—good enough, kindly.",
+  },
+  "life-p4g": {
+    headline: "Stretch while the kettle hums",
+    feeling:
+      "Low drama, high relief—your body gets a minute before the next thing.",
+  },
+};
+
+function productPageMoment(card) {
+  const row = PRODUCT_PAGE_COPY[card.id];
+  if (row) return row;
+  const headline =
+    (card.title && card.title.split("—")[0]?.trim()) || card.title || "This moment";
+  return {
+    headline,
+    feeling:
+      "Something about how it fits an ordinary day—no performance, just a little more ease.",
+  };
+}
+
 const INITIAL_WALLET = 200;
 const INTERACTIONS_TO_END = 15;
 
@@ -2372,6 +2528,8 @@ export default function ScrollTrapSimulation() {
     return null;
   }
 
+  const productMoment = productPageMoment(currentCard);
+
   return (
     <div className="app-shell">
       <div className="phone">
@@ -2401,10 +2559,10 @@ export default function ScrollTrapSimulation() {
 
         {productPageOpen && showCommerceChrome ? (
           <div
-            className="product-page"
+            className="product-page product-page--enter"
             role="dialog"
             aria-modal="true"
-            aria-label="Product details"
+            aria-label="Product moment"
           >
             <div className="product-page__top">
               <button
@@ -2416,7 +2574,7 @@ export default function ScrollTrapSimulation() {
                 <span className="product-page__back-icon" aria-hidden>
                   ←
                 </span>
-                <span>feed</span>
+                <span>Back to Feed</span>
               </button>
             </div>
             <div className="product-page__scroll">
@@ -2433,37 +2591,40 @@ export default function ScrollTrapSimulation() {
                 <p className="product-page__eyebrow">
                   {INTEREST_META[selectedInterest]?.label ?? "For you"}
                 </p>
-                <h2 className="product-page__title">{currentCard.title}</h2>
+                <h2 className="product-page__title">{productMoment.headline}</h2>
+                <p className="product-page__feeling">{productMoment.feeling}</p>
                 {currentCard.price > 0 && (
-                  <p className="product-page__price">${currentCard.price}</p>
-                )}
-                <p className="product-page__meta">
-                  <span className="product-page__tag">{currentCard.category}</span>
-                  {currentCard.tactic && currentCard.tactic !== "none" ? (
-                    <span className="product-page__tag product-page__tag--muted">
-                      {currentCard.tactic}
+                  <p className="product-page__price-line">
+                    <span className="product-page__price">
+                      About ${currentCard.price}
                     </span>
-                  ) : null}
-                </p>
-                <p className="product-page__hint">
-                  Same moment as the clip — you can go back and keep scrolling, or
-                  choose here.
-                </p>
+                  </p>
+                )}
+                <ul className="product-page__quotes" aria-label="What people said">
+                  {(currentCard.comments ?? []).slice(0, 3).map((c, i) => (
+                    <li key={i} className="product-page__quote">
+                      <span className="product-page__quote-user">@{c.user}</span>
+                      <span className="product-page__quote-text">{c.text}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
             <div className="product-page__footer">
               <button
                 type="button"
-                className="product-page__buy"
+                className="product-page__cta"
                 onClick={handleBuy}
                 disabled={!canBuy}
                 aria-label={
-                  canBuy ? "Buy and continue feed" : "Not enough balance to buy"
+                  canBuy
+                    ? "Add to routine and continue feed"
+                    : "Not enough balance to add to routine"
                 }
               >
                 {canBuy
-                  ? `Choose · $${currentCard.price}`
-                  : `Need $${currentCard.price} · wallet $${wallet}`}
+                  ? `Add to Routine · $${currentCard.price}`
+                  : `Need $${currentCard.price} · you have $${wallet}`}
               </button>
             </div>
           </div>
@@ -2500,7 +2661,7 @@ export default function ScrollTrapSimulation() {
               <div className={railClass}>
                 <button
                   type="button"
-                  className="action-pill"
+                  className="action-pill action-pill--like"
                   onClick={handleLike}
                   aria-label="Like"
                 >
@@ -2511,7 +2672,7 @@ export default function ScrollTrapSimulation() {
                 </button>
                 <button
                   type="button"
-                  className="action-pill"
+                  className="action-pill action-pill--skip"
                   onClick={handleSkip}
                   aria-label="Skip"
                 >
